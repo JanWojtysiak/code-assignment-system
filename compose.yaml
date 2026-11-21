@@ -1,0 +1,9 @@
+services:
+  postgres:
+    image: 'postgres:latest'
+    environment:
+      - 'POSTGRES_DB=codesystem'
+      - 'POSTGRES_PASSWORD=codesystem'
+      - 'POSTGRES_USER=codesystem'
+    ports:
+      - '127.0.0.1:5432:5432'
