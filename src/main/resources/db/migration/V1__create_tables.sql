@@ -87,11 +87,6 @@ CREATE TABLE student_classroom (
 );
 -- ===== ZADANIA I OCENY =====
 
-CREATE TABLE grade_value (
-    id SERIAL PRIMARY KEY,
-    name TEXT NOT NULL
-);
-
 CREATE TABLE grade (
     id             SERIAL PRIMARY KEY,
     student_id     INTEGER NOT NULL,
@@ -103,17 +98,6 @@ CREATE TABLE grade (
         REFERENCES student_classroom(student_id, classroom_id)
 );
 
-CREATE TABLE ai_evaluation (
-    id INTEGER PRIMARY KEY,
-    submission_id INTEGER NOT NULL REFERENCES submission(id),
-    model_name TEXT NOT NULL,
-    score DECIMAL(5,2) NOT NULL CHECK (score BETWEEN 0 AND 100),
-    feedback TEXT,
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
-    approved_at TIMESTAMP,
-    final_score DECIMAL(5,2) CHECK (final_score BETWEEN 0 AND 100),
-    approved_by INTEGER REFERENCES instructor(id)
-);
 CREATE TABLE assignment (
     id            SERIAL PRIMARY KEY,
     classroom_id  INTEGER NOT NULL,
@@ -124,16 +108,28 @@ CREATE TABLE assignment (
     created_at    TIMESTAMP NOT NULL DEFAULT now(),
     FOREIGN KEY (instructor_id, classroom_id)
         REFERENCES instructor_classroom(instructor_id, classroom_id)
+);
+
+CREATE TABLE submission (
+    id SERIAL PRIMARY KEY,
+    student_id INTEGER NOT NULL REFERENCES student(id),
+    assignment_id INTEGER NOT NULL REFERENCES assignment(id),
+    submitted_at TIMESTAMP NOT NULL DEFAULT now()
+);
+
+CREATE TABLE ai_evaluation (
+    id SERIAL PRIMARY KEY,
+    submission_id INTEGER NOT NULL REFERENCES submission(id),
+    model_name TEXT NOT NULL,
+    score DECIMAL(5,2) NOT NULL CHECK (score BETWEEN 0 AND 100),
+    feedback TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    approved_at TIMESTAMP,
+    final_score DECIMAL(5,2) CHECK (final_score BETWEEN 0 AND 100),
+    approved_by INTEGER REFERENCES instructor(id),
     CHECK (
         (approved_by IS NULL AND approved_at IS NULL AND final_score IS NULL)
         OR
         (approved_by IS NOT NULL AND approved_at IS NOT NULL AND final_score IS NOT NULL)
     )
-);
-
-CREATE TABLE submission (
-    id INTEGER PRIMARY KEY,
-    student_id INTEGER NOT NULL REFERENCES student(id),
-    assignment_id INTEGER NOT NULL REFERENCES assigment(id),
-    submitted_at TIMESTAMP NOT NULL DEFAULT now()
 );
