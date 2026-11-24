@@ -46,7 +46,8 @@ CREATE TABLE student (
 CREATE TABLE course (
     id          SERIAL PRIMARY KEY,
     name        TEXT NOT NULL,
-    language_id INTEGER NOT NULL REFERENCES programming_language(id)
+    language_id INTEGER NOT NULL REFERENCES programming_language(id),
+    deleted_at  TIMESTAMP
 );
 
 CREATE TABLE classroom (
